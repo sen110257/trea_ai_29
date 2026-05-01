@@ -12,8 +12,11 @@ export const useUserStore = defineStore('user', () => {
 
   const isLoggedIn = computed(() => user.value.isLoggedIn)
 
-  const knowledgeList = ref([...coldKnowledgeList])
-  const comments = ref({ ...commentsData })
+  const storedKnowledge = JSON.parse(localStorage.getItem('cold_knowledge_list'))
+  const storedComments = JSON.parse(localStorage.getItem('cold_knowledge_comments'))
+  
+  const knowledgeList = ref(storedKnowledge || [...coldKnowledgeList])
+  const comments = ref(storedComments || { ...commentsData })
 
   function login() {
     user.value = { ...testUser }
@@ -99,7 +102,7 @@ export const useUserStore = defineStore('user', () => {
 
   function addMyPost(post) {
     const newPost = {
-      id: knowledgeList.value.length + 1000 + myPosts.value.length,
+      id: Date.now(),
       title: post.title,
       intro: post.intro,
       coverImage: post.coverImage,
@@ -122,6 +125,8 @@ export const useUserStore = defineStore('user', () => {
     })
     comments.value[newPost.id] = []
     saveMyPostsToStorage()
+    saveKnowledgeListToStorage()
+    saveCommentsToStorage()
     return newPost
   }
 
@@ -161,6 +166,7 @@ export const useUserStore = defineStore('user', () => {
       likes: 0
     }
     comments.value[itemId].unshift(newComment)
+    saveCommentsToStorage()
     return newComment
   }
 
@@ -216,6 +222,14 @@ export const useUserStore = defineStore('user', () => {
 
   function saveLikedToStorage() {
     localStorage.setItem('cold_knowledge_liked', JSON.stringify(likedItems.value))
+  }
+
+  function saveKnowledgeListToStorage() {
+    localStorage.setItem('cold_knowledge_list', JSON.stringify(knowledgeList.value))
+  }
+
+  function saveCommentsToStorage() {
+    localStorage.setItem('cold_knowledge_comments', JSON.stringify(comments.value))
   }
 
   return {

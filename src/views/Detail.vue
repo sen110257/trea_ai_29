@@ -296,7 +296,7 @@ function submitComment() {
   
   userStore.addComment(knowledge.value.id, newComment.value.trim())
   
-  comments.value = userStore.getComments(knowledge.value.id)
+  comments.value = [...userStore.getComments(knowledge.value.id)]
   
   newComment.value = ''
   showCommentPopup.value = false
